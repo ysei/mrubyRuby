@@ -1,0 +1,513 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<title>mrubyのバイトコードフォーマット解説その2 &laquo;  他人の空似</title>
+
+	<style type="text/css" media="screen">
+		@import url( http://resemblances.click3.org/wp-content/themes/classic/style.css );
+	</style>
+
+	<link rel="pingback" href="http://resemblances.click3.org/xmlrpc.php" />
+		<link rel='archives' title='2015年9月' href='http://resemblances.click3.org/?m=201509' />
+	<link rel='archives' title='2015年6月' href='http://resemblances.click3.org/?m=201506' />
+	<link rel='archives' title='2015年5月' href='http://resemblances.click3.org/?m=201505' />
+	<link rel='archives' title='2015年4月' href='http://resemblances.click3.org/?m=201504' />
+	<link rel='archives' title='2015年3月' href='http://resemblances.click3.org/?m=201503' />
+	<link rel='archives' title='2015年2月' href='http://resemblances.click3.org/?m=201502' />
+	<link rel='archives' title='2015年1月' href='http://resemblances.click3.org/?m=201501' />
+	<link rel='archives' title='2014年10月' href='http://resemblances.click3.org/?m=201410' />
+	<link rel='archives' title='2014年6月' href='http://resemblances.click3.org/?m=201406' />
+	<link rel='archives' title='2014年5月' href='http://resemblances.click3.org/?m=201405' />
+	<link rel='archives' title='2014年3月' href='http://resemblances.click3.org/?m=201403' />
+	<link rel='archives' title='2014年2月' href='http://resemblances.click3.org/?m=201402' />
+	<link rel='archives' title='2014年1月' href='http://resemblances.click3.org/?m=201401' />
+	<link rel='archives' title='2013年12月' href='http://resemblances.click3.org/?m=201312' />
+	<link rel='archives' title='2013年11月' href='http://resemblances.click3.org/?m=201311' />
+	<link rel='archives' title='2013年9月' href='http://resemblances.click3.org/?m=201309' />
+	<link rel='archives' title='2013年8月' href='http://resemblances.click3.org/?m=201308' />
+	<link rel='archives' title='2013年7月' href='http://resemblances.click3.org/?m=201307' />
+	<link rel='archives' title='2013年6月' href='http://resemblances.click3.org/?m=201306' />
+	<link rel='archives' title='2013年4月' href='http://resemblances.click3.org/?m=201304' />
+	<link rel='archives' title='2013年2月' href='http://resemblances.click3.org/?m=201302' />
+	<link rel='archives' title='2013年1月' href='http://resemblances.click3.org/?m=201301' />
+	<link rel='archives' title='2012年7月' href='http://resemblances.click3.org/?m=201207' />
+	<link rel='archives' title='2012年4月' href='http://resemblances.click3.org/?m=201204' />
+	<link rel='archives' title='2012年2月' href='http://resemblances.click3.org/?m=201202' />
+	<link rel='archives' title='2011年10月' href='http://resemblances.click3.org/?m=201110' />
+	<link rel='archives' title='2011年9月' href='http://resemblances.click3.org/?m=201109' />
+	<link rel='archives' title='2011年8月' href='http://resemblances.click3.org/?m=201108' />
+	<link rel='archives' title='2011年7月' href='http://resemblances.click3.org/?m=201107' />
+	<link rel='archives' title='2011年5月' href='http://resemblances.click3.org/?m=201105' />
+	<link rel='archives' title='2011年4月' href='http://resemblances.click3.org/?m=201104' />
+	<link rel='archives' title='2011年3月' href='http://resemblances.click3.org/?m=201103' />
+	<link rel='archives' title='2011年2月' href='http://resemblances.click3.org/?m=201102' />
+	<link rel='archives' title='2010年12月' href='http://resemblances.click3.org/?m=201012' />
+	<link rel='archives' title='2010年11月' href='http://resemblances.click3.org/?m=201011' />
+	<link rel='archives' title='2010年10月' href='http://resemblances.click3.org/?m=201010' />
+	<link rel='archives' title='2010年9月' href='http://resemblances.click3.org/?m=201009' />
+	<link rel='archives' title='2010年8月' href='http://resemblances.click3.org/?m=201008' />
+	<link rel='archives' title='2010年7月' href='http://resemblances.click3.org/?m=201007' />
+	<link rel='archives' title='2010年6月' href='http://resemblances.click3.org/?m=201006' />
+	<link rel='archives' title='2010年5月' href='http://resemblances.click3.org/?m=201005' />
+	<link rel='archives' title='2010年4月' href='http://resemblances.click3.org/?m=201004' />
+	<link rel='archives' title='2010年3月' href='http://resemblances.click3.org/?m=201003' />
+	<link rel='archives' title='2010年2月' href='http://resemblances.click3.org/?m=201002' />
+	<link rel='archives' title='2010年1月' href='http://resemblances.click3.org/?m=201001' />
+	<link rel='archives' title='2009年11月' href='http://resemblances.click3.org/?m=200911' />
+	<link rel='archives' title='2009年10月' href='http://resemblances.click3.org/?m=200910' />
+	<link rel='archives' title='2009年9月' href='http://resemblances.click3.org/?m=200909' />
+	<link rel='archives' title='2009年8月' href='http://resemblances.click3.org/?m=200908' />
+	<link rel='archives' title='2009年7月' href='http://resemblances.click3.org/?m=200907' />
+	<link rel='archives' title='2009年6月' href='http://resemblances.click3.org/?m=200906' />
+	<link rel='archives' title='2009年5月' href='http://resemblances.click3.org/?m=200905' />
+	<link rel='archives' title='2009年4月' href='http://resemblances.click3.org/?m=200904' />
+	<link rel='archives' title='2009年3月' href='http://resemblances.click3.org/?m=200903' />
+	<link rel='archives' title='2009年2月' href='http://resemblances.click3.org/?m=200902' />
+		<link rel="alternate" type="application/rss+xml" title="他人の空似 &raquo; フィード" href="http://resemblances.click3.org/?feed=rss2" />
+<link rel="alternate" type="application/rss+xml" title="他人の空似 &raquo; コメントフィード" href="http://resemblances.click3.org/?feed=comments-rss2" />
+<link rel="alternate" type="application/rss+xml" title="他人の空似 &raquo; mrubyのバイトコードフォーマット解説その2 のコメントのフィード" href="http://resemblances.click3.org/?feed=rss2&#038;p=1706" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"http:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/resemblances.click3.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.3.1"}};
+			!function(a,b,c){function d(a){var c=b.createElement("canvas"),d=c.getContext&&c.getContext("2d");return d&&d.fillText?(d.textBaseline="top",d.font="600 32px Arial","flag"===a?(d.fillText(String.fromCharCode(55356,56812,55356,56807),0,0),c.toDataURL().length>3e3):(d.fillText(String.fromCharCode(55357,56835),0,0),0!==d.getImageData(16,16,1,1).data[0])):!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g;c.supports={simple:d("simple"),flag:d("flag")},c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.simple&&c.supports.flag||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='toc-screen-css'  href='http://resemblances.click3.org/wp-content/plugins/table-of-contents-plus/screen.min.css?ver=1509' type='text/css' media='all' />
+<script type='text/javascript' src='http://resemblances.click3.org/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>
+<script type='text/javascript' src='http://resemblances.click3.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://resemblances.click3.org/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://resemblances.click3.org/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='AppContainer関連サンプル紹介' href='http://resemblances.click3.org/?p=1688' />
+<link rel='next' title='GetProcessMemory' href='http://resemblances.click3.org/?p=1715' />
+<meta name="generator" content="WordPress 4.3.1" />
+<link rel='canonical' href='http://resemblances.click3.org/?p=1706' />
+<link rel='shortlink' href='http://resemblances.click3.org/?p=1706' />
+	<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+<style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+
+<body class="single single-post postid-1706 single-format-standard">
+<div id="rap">
+<h1 id="header">
+	<a href="http://resemblances.click3.org/">他人の空似</a>
+	<span id="tagline"></span>
+</h1>
+
+<div id="content">
+<!-- end header -->
+
+
+<h2>2014 年 5 月 18 日</h2>
+<div class="post-1706 post type-post status-publish format-standard hentry category-uncategorized" id="post-1706">
+	 <h3 class="storytitle"><a href="http://resemblances.click3.org/?p=1706" rel="bookmark">mrubyのバイトコードフォーマット解説その2</a></h3>
+	<div class="meta">Filed under: <a href="http://resemblances.click3.org/?cat=1" rel="category">未分類</a> &#8212;  中の人 @ 12:57 AM </div>
+
+	<div class="storycontent">
+		<p>2014/05/14、mrubyでローカル変数情報を扱うようになりlocal_variablesメソッドも使用可能に。<br />
+それに伴いバイトコードのフォーマットも変更となり、新たにLVARセクションが追加されました。</p>
+<p>そこで今回は追加されたLVARセクションについて、簡単にフォーマット紹介をしようと思います。</p>
+<p><a href="http://resemblances.click3.org/?p=1594">過去の記事</a>の続きなので、まだの人はそちらからどうぞ。</p>
+<p>いつものようにサンプルコード<br />
+<a onclick="javascript:pageTracker._trackPageview('/outgoing/wordpress.click3.org/garakuta/parse_mruby3.zip');"  href="http://wordpress.click3.org/garakuta/parse_mruby3.zip">http://wordpress.click3.org/garakuta/parse_mruby3.zip</a><br />
+内容は<a href="http://resemblances.click3.org/?p=1594">過去の記事</a>の物をベースにローカル変数情報を追加してあります。<br />
+動作としては、parse_mruby.exeに.mrbファイルをD&#038;Dするとローカル変数情報とirep情報を表示する、というものです。</p>
+<p><span style="color: red;">この記事で対象としているmrubyは2014/05/17当時(git hash: 13db4da204d2bedec4c0c5de939e662a44d477a6 )の物です。<br />
+それ以降のmrubyを使用する場合は以下の解説の通りではない可能性があります。</span></p>
+<div id="toc_container" class="no_bullets"><p class="toc_title">この記事の目次</p><ul class="toc_list"><li><a href="#i"><span class="toc_number toc_depth_1">1</span> セクション</a></li><li><a href="#LVAR"><span class="toc_number toc_depth_1">2</span> LVARセクション</a><ul><li><a href="#i-2"><span class="toc_number toc_depth_2">2.1</span> シンボルテーブル</a></li><li><a href="#i-3"><span class="toc_number toc_depth_2">2.2</span> レコードテーブル</a></li><li><a href="#irep"><span class="toc_number toc_depth_2">2.3</span> irepとの紐づけ</a></li><li><a href="#i-4"><span class="toc_number toc_depth_2">2.4</span> 終わりに</a></li></ul></li></ul></div>
+<h2><span id="i">セクション</span></h2>
+<p>ローカル変数は新設されたセクションに含まれています。<br />
+<a href="http://resemblances.click3.org/?p=1594">過去の記事</a>でも書いていますがセクションには共通のセクションヘッダーと呼ぶべきものを含んでおり、それは以下の通りになります。</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+ubig8_t signature[4];
+ubig32_t size;
+</pre>
+<h2><span id="LVAR">LVARセクション</span></h2>
+<p>ローカル変数名を保持するセクションで、signatureは0x4C 0x56 0x41 0x52(ASCIIでLVAR)になります。<br />
+LVARセクション専用の追加ヘッダーは特に存在しません。</p>
+<p>LVARセクションは一つのmrbファイル一つにつき一つのみ存在し、複数のメソッドが含まれている場合はそれらすべてのローカル変数情報を持ちます。<br />
+LVARセクションはセクションヘッダーを除くと二つの領域からなりローカル変数名を表すシンボルテーブルと、各レジスタとシンボルを紐づけるレコードテーブルに分けられます。</p>
+<h3><span id="i-2">シンボルテーブル</span></h3>
+<p>ローカル変数名のシンボルを格納した領域。<br />
+含まれるirepすべてのローカル変数名情報のリストであり、重複も排除されている。<br />
+構造は以下の構造の通りになる。</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+ubig32_t count;
+struct symbol {
+  ubig16_t len;
+  ubig8_t body[len];
+} symbolList[count];
+</pre>
+<p>サンプル内で実際に読み込んでいるコードは以下の通り。</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+  static boost::shared_ptr&lt;const LocalVariableSymbolList&gt; Read(const uint8_t *ptr, unsigned int size) {
+    boost::shared_ptr&lt;const LocalVariableSymbolList&gt; result;
+    if (size &lt; 4) {
+      return result;
+    }
+    const unsigned int count = *reinterpret_cast&lt;const endian::ubig32_t *&gt;(ptr);
+    ptr += 4;
+    size -= 4;
+    if (count * 1 &gt; size) {
+      return result;
+    }
+    std::vector&lt;std::string&gt; list(count);
+    BOOST_FOREACH(std::string &amp;str, list) {
+      if (size &lt; 2) {
+        return result;
+      }
+      const unsigned int len = *reinterpret_cast&lt;const endian::ubig16_t *&gt;(ptr);
+      ptr += 2;
+      size -= 2;
+      if (len &gt; size) {
+        return result;
+      }
+      str.assign(reinterpret_cast&lt;const char *&gt;(ptr), len);
+      ptr += len;
+      size -= len;
+    }
+    result.reset(new LocalVariableSymbolList(list));
+    return result;
+  }
+</pre>
+<p>最初にシンボルの個数を取得し、その個数分だけループをまわして文字列長を取得した後その長さだけ文字列として読み込み、最後にそれを保持するインスタンスを作成して返しているだけです。<br />
+irepのシンボルテーブルと違い終端文字列は含まない点に注意。<br />
+また現在の版だとブロック引数に(たとえ使用していなくても)常に空文字列がローカル変数名として割り当てられており、それがこのシンボルテーブルにも含まれていることがあります。</p>
+<h3><span id="i-3">レコードテーブル</span></h3>
+<p>ローカル変数シンボルと実際にローカル変数が保持されているレジスタを紐づけるテーブル。<br />
+irepデータの数だけ存在し、深さ優先探索的にならんでいる。<br />
+構造は以下の通り</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+ubig16_t symbolIndex;
+ubig16_t registerIndex;
+</pre>
+<p>symbolIndexは前述のシンボルテーブル内のインデックス、registerIndexはirep内の該当するローカル変数に紐づくレジスタのインデックスです。<br />
+サンプルで実際に読み上げている処理は以下の通り。</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+  static boost::shared_ptr&lt;const LocalVariableData&gt; Read(const uint8_t *ptr, unsigned int size, const boost::shared_ptr&lt;const IrepRecord&gt; irep, const boost::shared_ptr&lt;const LocalVariableSymbolList&gt; symbolList) {
+    boost::shared_ptr&lt;const LocalVariableData&gt; result;
+    if (static_cast&lt;unsigned int&gt;(2 + 2) * (irep-&gt;header-&gt;localCount - 1) &gt; size) {
+      return result;
+    }
+    std::vector&lt;Record&gt; records(irep-&gt;header-&gt;localCount - 1);
+    BOOST_FOREACH(Record &amp;record, records) {
+      const unsigned int nameIndex = *reinterpret_cast&lt;const endian::ubig16_t *&gt;(ptr);
+      if (nameIndex &gt; symbolList-&gt;list.size()) {
+        return result;
+      }
+      ptr += 2;
+      size -= 2;
+      record.name = &amp;symbolList-&gt;list[nameIndex];
+      record.registryIndex = *reinterpret_cast&lt;const endian::ubig16_t *&gt;(ptr);
+      ptr += 2;
+      size -= 2;
+    }
+    std::vector&lt;boost::shared_ptr&lt;const LocalVariableData&gt; &gt; childs(irep-&gt;child.size());
+    for (unsigned int i = 0; i &lt; childs.size(); i++) {
+      const boost::shared_ptr&lt;const LocalVariableData&gt; child = Read(ptr, size, irep-&gt;child[i], symbolList);
+      if (!child) {
+        return result;
+      }
+      childs[i] = child;
+      ptr += child-&gt;GetSize();
+      size -= child-&gt;GetSize();
+    }
+    result.reset(new LocalVariableData(records, childs));
+    return result;
+  }
+</pre>
+<p>最初に該当するirepのローカル変数の数を取得している。<br />
+-1しているのは自信を指すselfの分は含まれないためだ。</p>
+<p>次はローカル変数の数だけレコードを読み込み、シンボルとの関連付けを解決している。</p>
+<p>その後子のirepに対して再帰実行して読み込んだのち、データを保持するインスタンスを作成して返している。</p>
+<h3><span id="irep">irepとの紐づけ</span></h3>
+<p>irepとの紐づけといってもレコードテーブルの時点で終わっているも同然です。<br />
+すでにirepごとに変数の紐付けは終わっており、あとはirepでの処理の際に該当するレコードからシンボルを引っ張ってくるだけです。</p>
+<p>一応、サンプルにおけるローカル変数情報の表示部分を紹介します。</p>
+<pre class="brush: cpp; title: ; notranslate" title="">
+bool PrintLocalVariable(const boost::shared_ptr&lt;const LocalVariableData&gt; data, std::vector&lt;unsigned int&gt; &amp;index) {
+  std::cout &lt;&lt; boost::format(&quot;lvar%s\n&quot;) % std::accumulate(index.begin(), index.end(), std::string(), IndexListJoin());
+  BOOST_FOREACH(const LocalVariableData::Record &amp;record, data-&gt;records) {
+    std::cout &lt;&lt; boost::format(&quot;reg[%d] : %s&quot;) % record.registryIndex % *record.name &lt;&lt; std::endl;
+  }
+  std::wcout &lt;&lt; L&quot;\n&quot;;
+  unsigned int i = 0;
+  BOOST_FOREACH(const boost::shared_ptr&lt;const LocalVariableData&gt; &amp;child, data-&gt;childs) {
+    index.push_back(i);
+    if (!PrintLocalVariable(child, index)) {
+      return false;
+    }
+    index.pop_back();
+    i++;
+  }
+  return true;
+}
+</pre>
+<p>indexは階層表示用の配列でlvar->child[3]->child[2]->child[1]のirepのローカル変数情報を表示する際には[3, 2, 1]と保持しており、それを文字列に変換して使用しています。<br />
+あとは単にforeachで配列を展開して表示し、childがいれば再帰して呼び出しているだけです。</p>
+<h3><span id="i-4">終わりに</span></h3>
+<p>いかがだったでしょうか。<br />
+新しくセクションが増えるというそれなりに大きな変更ですが、実はバージョン番号などには変化がありません。<br />
+Matzさん曰く<a onclick="javascript:pageTracker._trackPageview('/outgoing/twitter.com/yukihiro_matz/status/466583400476733440');"  href="https://twitter.com/yukihiro_matz/status/466583400476733440">「sectionが追加されただけで、かつ知らないsectionは読み飛ばす(はず)ですから、変更しなくても大丈夫だと思いました。」</a>とのことで、過去の版で動作する限りは特にバージョンは上がらないようです。</p>
+<p>今回の更新でローカル変数をevalで取得するようなコードも動くようになったので、また一歩rubyとの互換性が上がったと言えます。<br />
+この記事を読んで少しでもmrubyの動作について理解が深まれば幸いです。<br />
+では、また。</p>
+	</div>
+
+	<div class="feedback">
+				<a href="http://resemblances.click3.org/?p=1706#respond">Comments (0)</a>	</div>
+
+</div>
+
+
+<h2 id="comments">コメントはまだありません	<a href="#postcomment" title="コメントをどうぞ">&raquo;</a>
+</h2>
+
+	<p>コメントはまだありません。</p>
+
+<p><a href='http://resemblances.click3.org/?feed=rss2&#038;p=1706'>この投稿へのコメントの <abbr title="Really Simple Syndication">RSS</abbr> フィード</a>	<a href="http://resemblances.click3.org/wp-trackback.php?p=1706" rel="trackback">TrackBack <abbr title="Universal Resource Locator">URL</abbr></a>
+</p>
+
+<h2 id="postcomment">コメントをどうぞ</h2>
+
+
+<form action="http://resemblances.click3.org/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><small>名前 </small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><small>メールアドレス (公開されません) </small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>ウェブサイト</small></label></p>
+
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: &lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;s&gt; &lt;strike&gt; &lt;strong&gt; </small></p>-->
+
+<p><textarea name="comment" id="comment" cols="58" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="コメントを送信" />
+<input type="hidden" name="comment_post_ID" value="1706" />
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="c28060ebf6" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="71"/></p>
+</form>
+
+
+
+
+
+<!-- begin footer -->
+</div>
+
+<!-- begin sidebar -->
+<div id="menu">
+
+<ul>
+<li id="text-4" class="widget widget_text">その他コンテンツ			<div class="textwidget"><a href="http://resemblances.click3.org/product_list/">自作物一覧</a></div>
+		</li><li id="search-3" class="widget widget_search"><form role="search" method="get" id="searchform" class="searchform" action="http://resemblances.click3.org/">
+				<div>
+					<label class="screen-reader-text" for="s">検索:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="検索" />
+				</div>
+			</form></li><li id="calendar-3" class="widget widget_calendar"><div id="calendar_wrap"><table id="wp-calendar">
+	<caption>2015年10月</caption>
+	<thead>
+	<tr>
+		<th scope="col" title="日曜日">日</th>
+		<th scope="col" title="月曜日">月</th>
+		<th scope="col" title="火曜日">火</th>
+		<th scope="col" title="水曜日">水</th>
+		<th scope="col" title="木曜日">木</th>
+		<th scope="col" title="金曜日">金</th>
+		<th scope="col" title="土曜日">土</th>
+	</tr>
+	</thead>
+
+	<tfoot>
+	<tr>
+		<td colspan="3" id="prev"><a href="http://resemblances.click3.org/?m=201509">&laquo; 9月</a></td>
+		<td class="pad">&nbsp;</td>
+		<td colspan="3" id="next" class="pad">&nbsp;</td>
+	</tr>
+	</tfoot>
+
+	<tbody>
+	<tr>
+		<td colspan="4" class="pad">&nbsp;</td><td>1</td><td>2</td><td>3</td>
+	</tr>
+	<tr>
+		<td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>
+	</tr>
+	<tr>
+		<td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td>
+	</tr>
+	<tr>
+		<td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td>
+	</tr>
+	<tr>
+		<td id="today">25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td>
+	</tr>
+	</tbody>
+	</table></div></li><li id="archives-3" class="widget widget_archive">アーカイブ		<ul>
+	<li><a href='http://resemblances.click3.org/?m=201509'>2015年9月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201506'>2015年6月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201505'>2015年5月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201504'>2015年4月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201503'>2015年3月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201502'>2015年2月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201501'>2015年1月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201410'>2014年10月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201406'>2014年6月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201405'>2014年5月</a>&nbsp;(6)</li>
+	<li><a href='http://resemblances.click3.org/?m=201403'>2014年3月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201402'>2014年2月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201401'>2014年1月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201312'>2013年12月</a>&nbsp;(4)</li>
+	<li><a href='http://resemblances.click3.org/?m=201311'>2013年11月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201309'>2013年9月</a>&nbsp;(5)</li>
+	<li><a href='http://resemblances.click3.org/?m=201308'>2013年8月</a>&nbsp;(5)</li>
+	<li><a href='http://resemblances.click3.org/?m=201307'>2013年7月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201306'>2013年6月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201304'>2013年4月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201302'>2013年2月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201301'>2013年1月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201207'>2012年7月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201204'>2012年4月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201202'>2012年2月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201110'>2011年10月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201109'>2011年9月</a>&nbsp;(5)</li>
+	<li><a href='http://resemblances.click3.org/?m=201108'>2011年8月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201107'>2011年7月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201105'>2011年5月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201104'>2011年4月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201103'>2011年3月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201102'>2011年2月</a>&nbsp;(1)</li>
+	<li><a href='http://resemblances.click3.org/?m=201012'>2010年12月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=201011'>2010年11月</a>&nbsp;(4)</li>
+	<li><a href='http://resemblances.click3.org/?m=201010'>2010年10月</a>&nbsp;(5)</li>
+	<li><a href='http://resemblances.click3.org/?m=201009'>2010年9月</a>&nbsp;(8)</li>
+	<li><a href='http://resemblances.click3.org/?m=201008'>2010年8月</a>&nbsp;(15)</li>
+	<li><a href='http://resemblances.click3.org/?m=201007'>2010年7月</a>&nbsp;(11)</li>
+	<li><a href='http://resemblances.click3.org/?m=201006'>2010年6月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201005'>2010年5月</a>&nbsp;(26)</li>
+	<li><a href='http://resemblances.click3.org/?m=201004'>2010年4月</a>&nbsp;(16)</li>
+	<li><a href='http://resemblances.click3.org/?m=201003'>2010年3月</a>&nbsp;(8)</li>
+	<li><a href='http://resemblances.click3.org/?m=201002'>2010年2月</a>&nbsp;(2)</li>
+	<li><a href='http://resemblances.click3.org/?m=201001'>2010年1月</a>&nbsp;(24)</li>
+	<li><a href='http://resemblances.click3.org/?m=200911'>2009年11月</a>&nbsp;(14)</li>
+	<li><a href='http://resemblances.click3.org/?m=200910'>2009年10月</a>&nbsp;(35)</li>
+	<li><a href='http://resemblances.click3.org/?m=200909'>2009年9月</a>&nbsp;(23)</li>
+	<li><a href='http://resemblances.click3.org/?m=200908'>2009年8月</a>&nbsp;(20)</li>
+	<li><a href='http://resemblances.click3.org/?m=200907'>2009年7月</a>&nbsp;(4)</li>
+	<li><a href='http://resemblances.click3.org/?m=200906'>2009年6月</a>&nbsp;(6)</li>
+	<li><a href='http://resemblances.click3.org/?m=200905'>2009年5月</a>&nbsp;(4)</li>
+	<li><a href='http://resemblances.click3.org/?m=200904'>2009年4月</a>&nbsp;(16)</li>
+	<li><a href='http://resemblances.click3.org/?m=200903'>2009年3月</a>&nbsp;(3)</li>
+	<li><a href='http://resemblances.click3.org/?m=200902'>2009年2月</a>&nbsp;(25)</li>
+		</ul>
+</li>		<li id="recent-posts-3" class="widget widget_recent_entries">		最近の投稿		<ul>
+					<li>
+				<a href="http://resemblances.click3.org/?p=1850">Splatoonの距離別命中率計測</a>
+						</li>
+					<li>
+				<a href="http://resemblances.click3.org/?p=1844">touhouSE ver1.20リリース</a>
+						</li>
+					<li>
+				<a href="http://resemblances.click3.org/?p=1840">THxxBGMに深秘録製品版を追加するアプリリリース</a>
+						</li>
+					<li>
+				<a href="http://resemblances.click3.org/?p=1828">インクリメントの前置後置速度比較(vc++/gcc/clang)</a>
+						</li>
+					<li>
+				<a href="http://resemblances.click3.org/?p=1809">windowsにおけるただフォワードするだけの関数の機械語比較(VC++/gcc/clang)</a>
+						</li>
+				</ul>
+		</li><li id="recent-comments-3" class="widget widget_recent_comments">最近のコメント<ul id="recentcomments"><li class="recentcomments"><a href="http://resemblances.click3.org/?p=1788&#038;cpage=1#comment-64771">Jane Style広告ブロックアプリリリース</a> に <span class="comment-author-link">匿名</span> より</li><li class="recentcomments"><a href="http://resemblances.click3.org/?p=1406&#038;cpage=2#comment-64731">Windows8 64bitで魔法使いの夜をプレイ</a> に <span class="comment-author-link">匿名</span> より</li><li class="recentcomments"><a href="http://resemblances.click3.org/?p=1406&#038;cpage=2#comment-64648">Windows8 64bitで魔法使いの夜をプレイ</a> に <span class="comment-author-link">匿名</span> より</li><li class="recentcomments"><a href="http://resemblances.click3.org/?p=1406&#038;cpage=2#comment-64596">Windows8 64bitで魔法使いの夜をプレイ</a> に <span class="comment-author-link">匿名</span> より</li><li class="recentcomments"><a href="http://resemblances.click3.org/?p=1406&#038;cpage=2#comment-64470">Windows8 64bitで魔法使いの夜をプレイ</a> に <span class="comment-author-link">匿名</span> より</li></ul></li><li id="meta-3" class="widget widget_meta">メタ情報			<ul>
+						<li><a href="http://resemblances.click3.org/wp-login.php">ログイン</a></li>
+			<li><a href="http://resemblances.click3.org/?feed=rss2">投稿の <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://resemblances.click3.org/?feed=comments-rss2">コメントの <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://ja.wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>			</ul>
+</li>
+</ul>
+
+</div>
+<!-- end sidebar -->
+
+<p class="credit"><!--33 queries. 0.196 seconds. --> <cite>Powered by <a href='http://wordpress.org/' title='Powered by WordPress, state-of-the-art semantic personal publishing platform.'><strong>WordPress</strong></a></cite></p>
+
+</div>
+
+
+<!-- tracker added by Ultimate Google Analytics plugin v1.6.0: http://www.oratransplant.nl/uga -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-7293454-3");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+<script type='text/javascript' src='http://resemblances.click3.org/wp-content/plugins/akismet/_inc/form.js?ver=3.1.5'></script>
+<script type='text/javascript' src='http://resemblances.click3.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b'></script>
+<script type='text/javascript' src='http://resemblances.click3.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "http://resemblances.click3.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.getElementsByTagName("head")[0].insertBefore( corecss, document.getElementById("syntaxhighlighteranchor") );
+		var themecssurl = "http://resemblances.click3.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		//document.getElementById("syntaxhighlighteranchor").appendChild(themecss);
+		document.getElementsByTagName("head")[0].insertBefore( themecss, document.getElementById("syntaxhighlighteranchor") );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = 'ソースを表示';
+	SyntaxHighlighter.config.strings.help = 'SyntaxHighlighterについて';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = '指定のブラシが見つかりませんでした: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'HTMLスクリプトのオプションのためにブラシが構成されませんでした: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+</script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var tocplus = {"visibility_show":"\u958b\u304f","visibility_hide":"\u9589\u3058\u308b","width":"Auto"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://resemblances.click3.org/wp-content/plugins/table-of-contents-plus/front.min.js?ver=1509'></script>
+</body>
+</html>
