@@ -91,7 +91,7 @@ section__0000__IREP__childCount:
 	.dc	0004 ; 0 4			nul eot
 section__0000__IREP__code_count:	; binary code suu
 	.dc.l	0000001a ; 0 0 0 26		nul nul nul sub
-section__0000__IREP__Code:		; code size : code_count * 4
+section__0000__IREP__0000:		; code size : code_count * 4
 
 000030 00 80 00 05 01 00 00 05
        nul nul nul enq soh nul nul enq
@@ -178,17 +178,31 @@ section__0000__IREP__symbol__00000004__body:
 	.dc.b	'g' ; 67			103
 section__0000__IREP__symbol__00000004__terminate:
 	.dc.b	0 ; 0				nul
+section__0000__IREP__symbol__00000005__len:
+	.dc	0005 ; 0 5			nul enq
+section__0000__IREP__symbol__00000005__body:
+	.dc.b	'print' ;  70 72 69 6e 74	112 114 105 110 116
+section__0000__IREP__symbol__00000005__terminate:
+	.dc.b	0 ; 0				nul
 
 
-0000c8 00 05 70 72 69 6e 74 00
-       nul enq   p   r   i   n   t nul
-         0   5 112 114 105 110 116   0
+
+0000d0:
+section__0000__IREP__0000__0001__size:
+	.dc.l	$0000006a : 0 0 0 106	nul nul nul j
+section__0000__IREP__0000__0001__localCount:
+	.dc	$0001 ; 0 1			nul soh
+section__0000__IREP__0000__0001__registerCount:
+	.dc	$0001 ; 0 2			nul stx
+section__0000__IREP__0000__0001__childCount:
+	.dc	$0005 ; 0 5			nul enq
+section__0000__IREP__0000__0001__code_count:
+	.dc.l	$00000011 ; 0 0 0 17	nul nul nul dc1
 
 
-0000d0 00 00 00 6a 00 01 00 02
-       nul nul nul   j nul soh nul stx
-         0   0   0 106   0   1   0   2
-0000d8 00 05 00 00 00 11 00 80
+0000d8 00 05 00 00 00 11 
+0000de:
+	00 80
        nul enq nul nul nul dc1 nul nul
          0   5   0   0   0  17   0 128
 0000e0 00 48 01 00 00 c0 00 80
@@ -197,10 +211,7 @@ section__0000__IREP__symbol__00000004__terminate:
 0000e8 00 46 00 80 00 06 00 80
        nul   F nul nul nul ack nul nul
          0  70   0 128   0   6   0 128
-0000f0 40 47 
-
-
-01 00 02 c0 00 80
+0000f0 40 47 01 00 02 c0 00 80
          @   G soh nul stx   @ nul nul
         64  71   1   0   2 192   0 128
 0000f8 40 46 00 80 00 48 01 00
@@ -218,7 +229,9 @@ section__0000__IREP__symbol__00000004__terminate:
 000118 40 47 00 80 02 45 00 00
          @   G nul nul stx   E nul nul
         64  71   0 128   2  69   0   0
-000120 00 29 00 00 00 00 00 00
+000120 00 29 
+
+	00 00 00 00 00 00
        nul   ) nul nul nul nul nul nul
          0  41   0   0   0   0   0   0
 000128 00 04 00 01 62 00 00 01
